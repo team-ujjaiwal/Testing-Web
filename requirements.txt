@@ -1,0 +1,8 @@
+Flask[async]
+requests
+aiohttp
+pycryptodome
+protobuf
+protobuf_decoder
+googleapis-common-protos
+Werkzeug
