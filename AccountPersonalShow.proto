@@ -1,0 +1,481 @@
+syntax = "proto3";
+
+package freefire;
+
+// Account Preferences
+message AccountPrefers {
+  bool hide_my_lobby = 1;
+  repeated uint32 pregame_show_choices = 2;
+  repeated uint32 br_pregame_show_choices = 3;
+  bool hide_personal_info = 4;
+  bool disable_friend_spectate = 5;
+  bool hide_occupation = 6;
+}
+
+// External Icon Information
+message ExternalIconInfo {
+  string external_icon = 1;
+  ExternalIconStatus status = 2;
+  ExternalIconShowType show_type = 3;
+}
+
+// Social Highlight
+message SocialHighLight {
+  HighLight high_light = 1;
+  int64 expire_at = 2;
+  uint32 value = 3;
+}
+
+// Weapon Power Title Information
+message WeaponPowerTitleInfo {
+  string region = 1;
+  uint32 title_cfg_id = 2;
+  uint64 leaderboard_id = 3;
+  uint32 weapon_id = 4;
+  uint32 rank = 5;
+  int64 expire_time = 6;
+  int64 reward_time = 7;
+  string RegionName = 8;
+  ELeaderBoardTitleRegionType RegionType = 9;
+  bool IsBr = 10;
+}
+
+// Guild War Title Information
+message GuildWarTitleInfo {
+  string region = 1;
+  uint64 clan_id = 2;
+  uint32 title_cfg_id = 3;
+  uint64 leaderboard_id = 4;
+  uint32 rank = 5;
+  int64 expire_time = 6;
+  int64 reward_time = 7;
+  string clan_name = 8;
+}
+
+// Leaderboard Title Information
+message LeaderboardTitleInfo {
+  repeated WeaponPowerTitleInfo weapon_power_title_info = 1;
+  repeated GuildWarTitleInfo guild_war_title_info = 2;
+}
+
+// Social Basic Information
+message SocialBasicInfo {
+  uint64 account_id = 1;
+  Gender gender = 2;
+  Language language = 3;
+  TimeOnline time_online = 4;
+  TimeActive time_active = 5;
+  repeated PlayerBattleTagID battle_tag = 6;
+  repeated SocialTag social_tag = 7;
+  ModePrefer mode_prefer = 8;
+  string signature = 9;
+  RankShow rank_show = 10;
+  repeated uint32 battle_tag_count = 11;
+  int64 signature_ban_expire_time = 12;
+  LeaderboardTitleInfo leaderboard_titles = 13;
+}
+
+// Social Highlights with Basic Info
+message SocialHighLightsWithSocialBasicInfo {
+  repeated SocialHighLight social_high_lights = 1;
+  SocialBasicInfo social_basic_info = 2;
+}
+
+// Occupation Information
+message OccupationInfo {
+  uint32 occupation_id = 1;
+  uint64 scores = 2;
+  uint64 proficients = 3;
+  uint32 proficient_lv = 4;
+}
+
+// Occupation Season Information
+message OccupationSeasonInfo {
+  uint32 season_id = 1;
+  uint32 game_mode = 2;
+  OccupationInfo info = 3;
+}
+
+// Basic Account Information
+message AccountInfoBasic {
+  uint64 account_id = 1;
+  uint32 account_type = 2;
+  string nickname = 3;
+  string external_id = 4;
+  string region = 5;
+  uint32 level = 6;
+  uint32 exp = 7;
+  uint32 external_type = 8;
+  string external_name = 9;
+  string external_icon = 10;
+  uint32 banner_id = 11;
+  uint32 head_pic = 12;
+  string clan_name = 13;
+  uint32 rank = 14;
+  uint32 ranking_points = 15;
+  uint32 role = 16;
+  bool has_elite_pass = 17;
+  uint32 badge_cnt = 18;
+  uint32 badge_id = 19;
+  uint32 season_id = 20;
+  uint32 liked = 21;
+  bool is_deleted = 22;
+  bool show_rank = 23;
+  int64 last_login_at = 24;
+  uint64 external_uid = 25;
+  int64 return_at = 26;
+  string championship_team_name = 27;
+  uint32 championship_team_member_num = 28;
+  uint64 championship_team_id = 29;
+  uint32 cs_rank = 30;
+  uint32 cs_ranking_points = 31;
+  repeated uint32 weapon_skin_shows = 32;
+  uint32 pin_id = 33;
+  bool is_cs_ranking_ban = 34;
+  uint32 max_rank = 35;
+  uint32 cs_max_rank = 36;
+  uint32 max_ranking_points = 37;
+  uint32 game_bag_show = 38;
+  uint32 peak_rank_pos = 39;
+  uint32 cs_peak_rank_pos = 40;
+  AccountPrefers account_prefers = 41;
+  uint32 periodic_ranking_points = 42;
+  uint32 periodic_rank = 43;
+  int64 create_at = 44;
+  VeteranLeaveDays veteran_leave_days_tag = 45;
+  repeated uint32 selected_item_slots = 46;
+  PreVeteranActionType pre_veteran_type = 47;
+  uint32 title = 48;
+  ExternalIconInfo external_icon_info = 49;
+  string release_version = 50;
+  uint64 veteran_expire_time = 51;
+  bool show_br_rank = 52;
+  bool show_cs_rank = 53;
+  uint64 clan_id = 54;
+  uint32 clan_badge_id = 55;
+  string custom_clan_badge = 56;
+  bool use_custom_clan_badge = 57;
+  uint32 clan_frame_id = 58;
+  bool membership_state = 59;
+  repeated OccupationSeasonInfo select_occupations = 60;
+  SocialHighLightsWithSocialBasicInfo social_high_lights_with_basic_info = 61;
+}
+
+// Avatar Skill Slot
+message AvatarSkillSlot {
+  optional uint64 slot_id = 1;
+  optional uint64 skill_id = 2;
+  optional EquipSource equip_source = 3;
+}
+
+// Avatar Profile
+message AvatarProfile {
+  optional uint32 avatar_id = 1;
+  optional uint32 skin_color = 3;
+  repeated uint32 clothes = 4;
+  repeated uint32 equiped_skills = 5;
+  optional bool is_selected = 6;
+  optional uint32 pve_primary_weapon = 7;
+  optional bool is_selected_awaken = 8;
+  optional uint32 end_time = 9;
+  optional UnlockType unlock_type = 10;
+  optional uint32 unlock_time = 11;
+  optional bool is_marked_star = 12;
+  repeated uint32 clothes_tailor_effects = 13;
+}
+
+// Account News Content
+message AccountNewsContent {
+  repeated uint32 item_ids = 1;
+  optional uint32 rank = 2;
+  optional uint32 match_mode = 3;
+  optional uint32 map_id = 4;
+  optional uint32 game_mode = 5;
+  optional uint32 group_mode = 6;
+  optional uint32 treasurebox_id = 7;
+  optional uint32 commodity_id = 8;
+  optional uint32 store_id = 9;
+}
+
+// Account News
+message AccountNews {
+  optional NewsType type = 1;
+  optional AccountNewsContent content = 2;
+  optional int64 update_time = 3;
+}
+
+// Basic Elite Pass Information
+message BasicEPInfo {
+  optional uint32 ep_event_id = 1;
+  optional bool owned_pass = 2;
+  optional uint32 ep_badge = 3;
+  optional uint32 badge_cnt = 4;
+  optional string bp_icon = 5;
+  optional uint32 max_level = 6;
+  optional string event_name = 7;
+}
+
+// Basic Clan Information
+message ClanInfoBasic {
+  optional uint64 clan_id = 1;
+  optional string clan_name = 2;
+  optional uint64 captain_id = 3;
+  optional uint32 clan_level = 4;
+  optional uint32 capacity = 5;
+  optional uint32 member_num = 6;
+  optional uint32 honor_point = 7;
+}
+
+// Pet Skill Information
+message PetSkillInfo {
+  optional uint32 pet_id = 1;
+  optional uint32 skill_id = 2;
+  optional uint32 skill_level = 3;
+}
+
+// Pet Information
+message PetInfo {
+  optional uint32 id = 1;
+  optional string name = 2;
+  optional uint32 level = 3;
+  optional uint32 exp = 4;
+  optional bool is_selected = 5;
+  optional uint32 skin_id = 6;
+  repeated uint32 actions = 7;
+  repeated PetSkillInfo skills = 8;
+  optional uint32 selected_skill_id = 9;
+  optional bool is_marked_star = 10;
+  optional uint32 end_time = 11;
+}
+
+// Diamond Cost Resource
+message DiamondCostRes {
+  optional uint32 diamond_cost = 1;
+}
+
+// Credit Score Basic Information
+message CreditScoreInfoBasic {
+  optional uint32 credit_score = 1;
+  optional bool is_init = 2;
+  optional RewardState reward_state = 3;
+  optional uint32 periodic_summary_like_cnt = 4;
+  optional uint32 periodic_summary_illegal_cnt = 5;
+  optional uint32 weekly_match_cnt = 6;
+  optional int64 periodic_summary_start_time = 7;
+  optional int64 periodic_summary_end_time = 8;
+}
+
+// Equipment Achievement Information
+message EquipAchInfo {
+  uint32 ach_id = 1;
+  uint32 level = 2;
+}
+
+// Account Personal Show Information
+message AccountPersonalShowInfo {
+  optional AccountInfoBasic basic_info = 1;
+  optional AvatarProfile profile_info = 2;
+  optional int32 ranking_leaderboard_pos = 3;
+  repeated AccountNews news = 4;
+  repeated BasicEPInfo history_ep_info = 5;
+  optional ClanInfoBasic clan_basic_info = 6;
+  optional AccountInfoBasic captain_basic_info = 7;
+  optional PetInfo pet_info = 8;
+  optional SocialBasicInfo social_info = 9;
+  optional DiamondCostRes diamond_cost_res = 10;
+  optional CreditScoreInfoBasic credit_score_info = 11;
+  optional PreVeteranActionType pre_veteran_type = 12;
+  repeated EquipAchInfo equipped_ach = 13;
+}
+
+// Map Information
+message MapInfo {
+  string MapCode = 1;
+  string MapTitle = 2;
+  string description = 3;
+}
+
+// Craftland Information
+message CraftlandInfo {
+  string CraftlandName = 1;
+  string CraftlandCode = 2;
+  string CraftlandTitle = 3;
+  string CraftlandDescription = 4;
+}
+
+// Map Request (added to fix the error)
+message MapRequest {
+  string map_code = 1;
+}
+
+// Enumerations
+enum VeteranLeaveDays {
+  VeteranLeaveDays_NONE = 0;
+  VeteranLeaveDays_SHORT = 1;
+  VeteranLeaveDays_NORMAL = 2;
+  VeteranLeaveDays_LONG = 3;
+  VeteranLeaveDays_VERYLONG = 4;
+}
+
+enum PreVeteranActionType {
+  PreVeteranActionType_NONE = 0;
+  PreVeteranActionType_ACTIVITY = 1;
+  PreVeteranActionType_BUFF = 2;
+}
+
+enum ExternalIconStatus {
+  ExternalIconStatus_NONE = 0;
+  ExternalIconStatus_NOT_IN_USE = 1;
+  ExternalIconStatus_IN_USE = 2;
+}
+
+enum ExternalIconShowType {
+  ExternalIconShowType_NONE = 0;
+  ExternalIconShowType_FRIEND = 1;
+  ExternalIconShowType_ALL = 2;
+}
+
+enum HighLight {
+  HighLight_NONE = 0;
+  HighLight_BR_WIN = 1;
+  HighLight_CS_MVP = 2;
+  HighLight_BR_STREAK_WIN = 3;
+  HighLight_CS_STREAK_WIN = 4;
+  HighLight_CS_RANK_GROUP_UPGRADE = 5;
+  HighLight_TEAM_ACE = 6;
+  HighLight_WEAPON_POWER_TITLE = 7;
+  HighLight_BR_RANK_GROUP_UPGRADE = 9;
+  HighLight_BR_STREAK_WIN_EXECELLENT = 10;
+  HighLight_CS_STREAK_WIN_EXECELLENT = 11;
+  HighLight_VETERAN = 12;
+}
+
+enum Gender {
+  Gender_NONE = 0;
+  Gender_MALE = 1;
+  Gender_FEMALE = 2;
+  Gender_UNLIMITED = 999;
+}
+
+enum Language {
+  Language_NONE = 0;
+  Language_EN = 1;
+  Language_CN_SIMPLIFIED = 2;
+  Language_CN_TRADITIONAL = 3;
+  Language_Thai = 4;
+  Language_VIETNAMESE = 5;
+  Language_INDONESIAN = 6;
+  Language_PORTUGUESE = 7;
+  Language_SPANISH = 8;
+  Language_RUSSIAN = 9;
+  Language_KOREAN = 10;
+  Language_FRENCH = 11;
+  Language_GERMAN = 12;
+  Language_TURKISH = 13;
+  Language_HINDI = 14;
+  Language_JAPANESE = 15;
+  Language_ROMANIAN = 16;
+  Language_ARABIC = 17;
+  Language_BURMESE = 18;
+  Language_URDU = 19;
+  Language_BENGALI = 20;
+  Language_UNLIMITED = 999;
+}
+
+enum TimeOnline {
+  TimeOnline_NONE = 0;
+  TimeOnline_WORKDAY = 1;
+  TimeOnline_WEEKEND = 2;
+  TimeOnline_UNLIMITED = 999;
+}
+
+enum TimeActive {
+  TimeActive_NONE = 0;
+  TimeActive_MORNING = 1;
+  TimeActive_AFTERNOON = 2;
+  TimeActive_NIGHT = 3;
+  TimeActive_UNLIMITED = 999;
+}
+
+enum PlayerBattleTagID {
+  PlayerBattleTagID_NONE = 0;
+  PlayerBattleTagID_DOMINATION = 1101;
+  PlayerBattleTagID_UNCROWN = 1102;
+  PlayerBattleTagID_BESTPARTNER = 1103;
+  PlayerBattleTagID_SNIPER = 1104;
+  PlayerBattleTagID_MELEE = 1105;
+  PlayerBattleTagID_PEACEMAKER = 1106;
+  PlayerBattleTagID_AMBUSH = 1107;
+  PlayerBattleTagID_SHORTSTOP = 1108;
+  PlayerBattleTagID_RAMPAGE = 1109;
+  PlayerBattleTagID_LEADER = 1110;
+}
+
+enum SocialTag {
+  SocialTag_NONE = 0;
+  SocialTag_FASHION = 4277;
+  SocialTag_SOCIAL = 4278;
+  SocialTag_VETERAN = 4279;
+  SocialTag_NEWBIE = 4280;
+  SocialTag_PLAYFORWIN = 4281;
+  SocialTag_PLAYFORFUN = 4282;
+  SocialTag_VOICEON = 4283;
+  SocialTag_VOICEOFF = 4284;
+}
+
+enum ModePrefer {
+  ModePrefer_NONE = 0;
+  ModePrefer_BR = 1;
+  ModePrefer_CS = 2;
+  ModePrefer_ENTERTAINMENT = 3;
+  ModePrefer_UNLIMITED = 999;
+}
+
+enum RankShow {
+  RankShow_NONE = 0;
+  RankShow_BR = 1;
+  RankShow_CS = 2;
+  RankShow_UNLIMITED = 999;
+}
+
+enum ELeaderBoardTitleRegionType {
+  None = 0;
+  Country = 1;
+  Province = 2;
+  City = 3;
+}
+
+enum UnlockType {
+  UnlockType_NONE = 0;
+  UnlockType_LINK = 1;
+}
+
+enum EquipSource {
+  EquipSource_SELF = 0;
+  EquipSource_CONFIDANT_FRIEND = 1;
+}
+
+enum NewsType {
+  NewsType_NONE = 0;
+  NewsType_RANK = 1;
+  NewsType_LOTTERY = 2;
+  NewsType_PURCHASE = 3;
+  NewsType_TREASUREBOX = 4;
+  NewsType_ELITEPASS = 5;
+  NewsType_EXCHANGESTORE = 6;
+  NewsType_BUNDLE = 7;
+  NewsType_LOTTERYSPECIALEXCHANGE = 8;
+  NewsType_OTHERS = 9;
+}
+
+enum RewardState {
+  REWARD_STATE_INVALID = 0;
+  REWARD_STATE_UNCLAIMED = 1;
+  REWARD_STATE_CLAIMED = 2;
+}
+
+// Craftland Map Service
+service CraftlandMapService {
+  rpc GetMapInfo (MapRequest) returns (MapInfo);
+  rpc GetCraftlandInfo (MapRequest) returns (CraftlandInfo);
+}
