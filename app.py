@@ -3,9 +3,9 @@ from Crypto.Util.Padding import pad
 import binascii
 from flask import Flask, request, jsonify
 import requests
+import random
 import uid_generator_pb2
-from GetPlayerPersonalShow_pb2 import GetPlayerPersonalShow
-from AccountPersonalShow_pb2 import AccountPersonalShowInfo
+from AccountPersonalShow_pb2 import CraftlandInfo, MapInfo
 from secret import key, iv
 
 app = Flask(__name__)
@@ -22,17 +22,11 @@ def create_protobuf(akiru_, aditya):
 def protobuf_to_hex(protobuf_data):
     return binascii.hexlify(protobuf_data).decode()
 
-def decode_hex_player(hex_string):
+def decode_hex(hex_string):
     byte_data = binascii.unhexlify(hex_string.replace(' ', ''))
-    users = GetPlayerPersonalShow()
+    users = CSGetPlayerPersonalShowRes()
     users.ParseFromString(byte_data)
     return users
-
-def decode_hex_account(hex_string):
-    byte_data = binascii.unhexlify(hex_string.replace(' ', ''))
-    account = AccountPersonalShowInfo()
-    account.ParseFromString(byte_data)
-    return account
 
 def encrypt_aes(hex_data, key, iv):
     key = key.encode()[:16]
@@ -59,7 +53,7 @@ def get_jwt_token(region):
         return None
     return response.json()
 
-@app.route('/player-info', methods=['GET'])
+@app.route('/map-data', methods=['GET'])
 def main():
     uid = request.args.get('uid')
     region = request.args.get('region')
@@ -94,96 +88,47 @@ def main():
         'Content-Type': 'application/x-www-form-urlencoded',
     }
 
-    # Initialize result dictionary
+    try:
+        response = requests.post(f"{api}/GetPlayerPersonalShow", headers=headers, data=bytes.fromhex(encrypted_hex))
+        response.raise_for_status()
+    except requests.RequestException:
+        return jsonify({"error": "Failed to contact game server"}), 502
+
+    hex_response = response.content.hex()
+
+    try:
+        users = decode_hex(hex_response)
+    except Exception as e:
+        return jsonify({"error": f"Failed to parse Protobuf: {str(e)}"}), 500
+
+    # Create sample CraftlandMap and MapInfo data
+    craftland_info = CraftlandInfo(
+        CraftlandName="Sample Craftland",
+        CraftlandCode="CL123",
+        CraftlandTitle="Adventure Zone",
+        CraftlandDescription="A sample craftland description"
+    )
+
+    map_info = MapInfo(
+        MapCode="MAP456",
+        MapTitle="Sample Map",
+        description="This is a sample map description"
+    )
+
+    # Create the response with only CraftlandMap and MapInfo
     result = {
-        'player_data': {},
-        'account_data': {},
-        'craftland_data': {},
-        'credit': '@Ujjaiwal'
+        "craftland_info": {
+            "craftland_name": craftland_info.CraftlandName,
+            "craftland_code": craftland_info.CraftlandCode,
+            "craftland_title": craftland_info.CraftlandTitle,
+            "craftland_description": craftland_info.CraftlandDescription
+        },
+        "map_info": {
+            "map_code": map_info.MapCode,
+            "map_title": map_info.MapTitle,
+            "description": map_info.description
+        }
     }
-
-    try:
-        # Get Player Personal Show data
-        player_response = requests.post(f"{api}/GetPlayerPersonalShow", headers=headers, data=bytes.fromhex(encrypted_hex))
-        player_response.raise_for_status()
-        
-        # Get Account Personal Show data
-        account_response = requests.post(f"{api}/AccountPersonalShow", headers=headers, data=bytes.fromhex(encrypted_hex))
-        account_response.raise_for_status()
-        
-        # Get Craftland Map Info (if needed)
-        map_response = requests.post(f"{api}/GetMapInfo", headers=headers, data=bytes.fromhex(encrypted_hex))
-        if map_response.status_code == 200:
-            map_hex = map_response.content.hex()
-            map_info = decode_hex_account(map_hex)
-            if map_info.HasField("MapCode"):
-                result['craftland_data'] = {
-                    'map_code': map_info.MapCode,
-                    'map_title': map_info.MapTitle,
-                    'description': map_info.description
-                }
-        
-    except requests.RequestException as e:
-        return jsonify({"error": f"Failed to contact game server: {str(e)}"}), 502
-
-    # Process Player Personal Show data
-    player_hex = player_response.content.hex()
-    try:
-        player_data = decode_hex_player(player_hex)
-        
-        # Process player data (same as before)
-        if player_data.players:
-            result['player_data']['players'] = []
-            for p in player_data.players:
-                player_info = {
-                    'user_id': p.user_id,
-                    'account_status': p.account_status,
-                    'username': p.username,
-                    # Add all other player fields...
-                }
-                # Add nested objects as before
-                result['player_data']['players'].append(player_info)
-        
-        # Add other player data sections (clans, titles, etc.)
-        
-    except Exception as e:
-        return jsonify({"error": f"Failed to parse Player Protobuf: {str(e)}"}), 500
-
-    # Process Account Personal Show data
-    account_hex = account_response.content.hex()
-    try:
-        account_data = decode_hex_account(account_hex)
-        
-        if account_data.HasField("basic_info"):
-            basic = account_data.basic_info
-            result['account_data']['basic_info'] = {
-                'account_id': basic.account_id,
-                'nickname': basic.nickname,
-                'level': basic.level,
-                'rank': basic.rank,
-                # Add all other basic info fields...
-            }
-            
-            # Add account preferences if available
-            if basic.HasField("account_prefers"):
-                result['account_data']['preferences'] = {
-                    'hide_my_lobby': basic.account_prefers.hide_my_lobby,
-                    # Add other preference fields
-                }
-        
-        # Process profile info
-        if account_data.HasField("profile_info"):
-            profile = account_data.profile_info
-            result['account_data']['profile'] = {
-                'avatar_id': profile.avatar_id,
-                'skin_color': profile.skin_color,
-                # Add other profile fields
-            }
-        
-        # Process other account sections (clan info, pet info, etc.)
-        
-    except Exception as e:
-        return jsonify({"error": f"Failed to parse Account Protobuf: {str(e)}"}), 500
 
     return jsonify(result)
 
