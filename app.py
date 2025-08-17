@@ -11,7 +11,7 @@ from secret import key, iv
 
 app = Flask(__name__)
 
-def hex_to_bytes(hex_string):
+def hex_to_unwieldy(hex_string):
     return bytes.fromhex(hex_string)
 
 def create_protobuf(akiru_, aditya):
@@ -102,9 +102,23 @@ def main():
     except Exception as e:
         return jsonify({"error": f"Failed to parse Protobuf: {str(e)}"}), 500
 
-    # Create prime level info
-    prime_info = prime(prime_level=8)
-    user_info = info(username="FB:ㅤ@GMRemyX", prime_level=prime_info)
+    # Extract username and prime_level dynamically
+    username = "Unknown"
+    prime_level_value = 0  # Default value if prime_level is not available
+
+    if account_info.HasField("basic_info"):
+        username = account_info.basic_info.nickname  # Fetch username from basic_info.nickname
+        # Derive prime_level (example logic: based on has_elite_pass)
+        if account_info.basic_info.has_elite_pass:
+            prime_level_value = 8  # Example: Set to 8 if elite pass is present
+        # If prime_level is available in another field (e.g., diamond_cost_res or another Protobuf field),
+        # adjust the logic here. For example:
+        # if account_info.HasField("diamond_cost_res"):
+        #     prime_level_value = account_info.diamond_cost_res.some_field_indicating_prime_level
+
+    # Create prime level info dynamically
+    prime_info = prime(prime_level=prime_level_value)
+    user_info = info(username=username, prime_level=prime_info)
     users_data = Users(basicinfo=[user_info])
 
     result = {}
@@ -172,7 +186,7 @@ def main():
             "memberNum": clan_info.member_num
         }
 
-    # Captain Basic Info (same as basic info)
+    # Captain Basic Info
     if account_info.HasField("captain_basic_info"):
         captain_info = account_info.captain_basic_info
         result["captainBasicInfo"] = {
@@ -229,10 +243,10 @@ def main():
         social_info = account_info.social_info
         result["socialInfo"] = {
             "accountId": str(social_info.account_id),
-            "language": "Language_EN",  # You can map this from social_info.language
-            "modePrefer": "ModePrefer_BR",  # You can map this from social_info.mode_prefer
+            "language": "Language_EN",  # Map from social_info.language
+            "modePrefer": "ModePrefer_BR",  # Map from social_info.mode_prefer
             "signature": social_info.signature,
-            "rankShow": "RankShow_CS"  # You can map this from social_info.rank_show
+            "rankShow": "RankShow_CS"  # Map from social_info.rank_show
         }
 
     # Diamond Cost Res
@@ -240,7 +254,7 @@ def main():
         diamond_cost = account_info.diamond_cost_res
         result["diamondCostRes"] = {
             "diamondCost": diamond_cost.diamond_cost,
-            "primeLevel": prime_info.prime_level  # From our prime_level_pb2 data
+            "primeLevel": prime_level_value  # Use dynamically fetched prime_level
         }
 
     # Credit Score Info
@@ -248,7 +262,7 @@ def main():
         credit_info = account_info.credit_score_info
         result["creditScoreInfo"] = {
             "creditScore": credit_info.credit_score,
-            "rewardState": "REWARD_STATE_UNCLAIMED",  # You can map this from credit_info.reward_state
+            "rewardState": "REWARD_STATE_UNCLAIMED",  # Map from credit_info.reward_state
             "periodicSummaryEndTime": str(credit_info.periodic_summary_end_time)
         }
 
